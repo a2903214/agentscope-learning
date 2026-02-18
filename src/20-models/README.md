@@ -15,7 +15,6 @@
 - `OPENAI_BASE_URL`
 - `OPENAI_MODEL`（默认模型）
 - `OPENAI_API_KEY`
-- `DOUBAO_DISABLE_THINKING`（豆包模型可选，`true/false`）
 
 可额外设置备用模型：
 

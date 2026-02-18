@@ -26,12 +26,6 @@ _load_dotenv()
 MODEL_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
 MODEL_NAME = os.getenv("OPENAI_MODEL", "doubao-seed-1-6-251015")
 MODEL_API_KEY = os.getenv("OPENAI_API_KEY", "")
-DOUBAO_DISABLE_THINKING = os.getenv("DOUBAO_DISABLE_THINKING", "true").strip().lower() in {
-    "1",
-    "true",
-    "yes",
-    "on",
-}
 
 
 def require_model_api_key() -> str:
@@ -57,11 +51,6 @@ def get_default_model_config(config_name: str = "default_model") -> dict:
     }
 
 
-def _is_doubao_model(model_name: str) -> bool:
-    lower_name = model_name.lower()
-    return "doubao" in lower_name or "seed" in lower_name
-
-
 def get_openai_chat_model_kwargs(model_name: str | None = None) -> dict:
     name = model_name or MODEL_NAME
     # Longer timeout for slow networks / large context (connect 60s, read 300s)
@@ -70,12 +59,8 @@ def get_openai_chat_model_kwargs(model_name: str | None = None) -> dict:
         timeout = httpx.Timeout(60.0, read=300.0)
     except Exception:
         timeout = 120.0
-    kwargs = {
+    return {
         "model_name": name,
         "api_key": require_model_api_key(),
         "client_kwargs": {"base_url": MODEL_BASE_URL, "timeout": timeout},
     }
-    if _is_doubao_model(name) and DOUBAO_DISABLE_THINKING:
-        # Doubao OpenAI-compatible option: disable model thinking output.
-        kwargs["generate_kwargs"] = {"thinking": {"type": "disabled"}}
-    return kwargs

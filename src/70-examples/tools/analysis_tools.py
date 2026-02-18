@@ -1,10 +1,11 @@
+"""产业链与投资分析工具：热点、产业链、标的映射、打分与深度报告。"""
 from typing import Any
 
 from .common import google_news_rss, text_response
 
 
 def discover_hot_topics(window_days: int = 7, market: str = "CN_US"):
-    """Discover market hot topics by online news heat."""
+    """根据近期新闻热度发现市场热点主题。"""
     topic_queries = {
         "AI算力": "AI 算力 芯片 数据中心 产业链",
         "人形机器人": "人形机器人 供应链 减速器 伺服",
@@ -27,7 +28,7 @@ def discover_hot_topics(window_days: int = 7, market: str = "CN_US"):
 
 
 def build_industry_chain(topic: str):
-    """Build upstream-midstream-downstream chain for a hot topic."""
+    """按热点主题构建上中下游产业链。"""
     mapping = {
         "AI算力": {
             "upstream": ["先进制程", "EDA/IP", "HBM/存储"],
@@ -45,7 +46,7 @@ def build_industry_chain(topic: str):
 
 
 def map_listed_companies(chain_node: str, market: str = "CN_US"):
-    """Map listed companies to a given chain node."""
+    """将上市公司映射到指定产业链环节。"""
     companies = {
         "GPU/ASIC": [
             {"symbol": "NVDA", "name": "NVIDIA", "market": "US"},
@@ -68,7 +69,7 @@ def map_listed_companies(chain_node: str, market: str = "CN_US"):
 
 
 def link_supply_chain(company: str):
-    """Return simplified supplier/customer links for a company."""
+    """返回某公司的简化供应商/客户关系。"""
     links = {
         "NVDA": {"suppliers": ["TSM", "SK hynix"], "customers": ["MSFT", "AMZN"]},
         "AMD": {"suppliers": ["TSM"], "customers": ["META", "ORCL"]},
@@ -79,14 +80,14 @@ def link_supply_chain(company: str):
 
 
 def analyze_core_technology(company_or_chain_node: str):
-    """Analyze technology moat for company or chain node."""
+    """分析公司或产业链环节的技术壁垒。"""
     text = f"{company_or_chain_node} 核心技术壁垒：工艺良率、系统集成能力、生态兼容性。"
     moat = 80 if company_or_chain_node in {"NVDA", "MSFT", "BABA"} else 65
     return text_response({"summary": text, "moat_score": moat})
 
 
 def analyze_business_model_shift(company: str, topic: str):
-    """Analyze business model shift driven by hot topic."""
+    """分析热点驱动下该公司的商业模式变革。"""
     shift = {
         "mode": "一次性硬件收入 -> 软硬一体 + 服务订阅",
         "impact": "毛利率与现金流质量提升",
@@ -99,7 +100,7 @@ def rank_investment_candidates(
     candidates: list[dict[str, Any]],
     scoring_config: dict[str, float],
 ):
-    """Rank candidate companies by weighted scoring factors."""
+    """按加权因子对候选公司打分排序。"""
     ranked: list[dict[str, Any]] = []
     for c in candidates:
         score = (
@@ -116,7 +117,7 @@ def rank_investment_candidates(
 
 
 def generate_deep_dive_report(symbol: str, context: dict[str, Any]):
-    """Generate deep dive report for selected symbol."""
+    """为选定标的生成深度分析报告。"""
     report = {
         "symbol": symbol,
         "thesis": context.get("thesis", ""),

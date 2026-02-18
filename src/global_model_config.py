@@ -64,10 +64,16 @@ def _is_doubao_model(model_name: str) -> bool:
 
 def get_openai_chat_model_kwargs(model_name: str | None = None) -> dict:
     name = model_name or MODEL_NAME
+    # Longer timeout for slow networks / large context (connect 60s, read 300s)
+    try:
+        import httpx
+        timeout = httpx.Timeout(60.0, read=300.0)
+    except Exception:
+        timeout = 120.0
     kwargs = {
         "model_name": name,
         "api_key": require_model_api_key(),
-        "client_kwargs": {"base_url": MODEL_BASE_URL},
+        "client_kwargs": {"base_url": MODEL_BASE_URL, "timeout": timeout},
     }
     if _is_doubao_model(name) and DOUBAO_DISABLE_THINKING:
         # Doubao OpenAI-compatible option: disable model thinking output.

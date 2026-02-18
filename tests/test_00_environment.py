@@ -2,7 +2,7 @@
 import subprocess
 import sys
 
-from conftest import SRC
+from conftest import SRC, SUBPROCESS_ENV
 
 
 def test_00_environment() -> None:
@@ -12,5 +12,6 @@ def test_00_environment() -> None:
         cwd=SRC,
         capture_output=False,
         timeout=60,
+        env=SUBPROCESS_ENV,
     )
     assert r.returncode == 0, "subprocess failed, see console output above"

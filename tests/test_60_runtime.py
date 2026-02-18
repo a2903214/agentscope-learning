@@ -2,7 +2,7 @@
 import subprocess
 import sys
 
-from conftest import SRC
+from conftest import SRC, SUBPROCESS_ENV
 
 
 def test_60_runtime_all() -> None:
@@ -12,5 +12,6 @@ def test_60_runtime_all() -> None:
         cwd=SRC,
         capture_output=False,
         timeout=300,
+        env=SUBPROCESS_ENV,
     )
     assert r.returncode == 0, "subprocess failed, see console output above"

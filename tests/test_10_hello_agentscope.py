@@ -2,7 +2,7 @@
 import subprocess
 import sys
 
-from conftest import SRC
+from conftest import SRC, SUBPROCESS_ENV
 
 
 def test_10_hello_agentscope() -> None:
@@ -12,5 +12,6 @@ def test_10_hello_agentscope() -> None:
         cwd=SRC,
         capture_output=False,
         timeout=120,
+        env=SUBPROCESS_ENV,
     )
     assert r.returncode == 0, "subprocess failed, see console output above"

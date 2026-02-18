@@ -1,1 +1,1 @@
-# tools package for 70-examples stock case
+# 70-examples 股票案例工具包

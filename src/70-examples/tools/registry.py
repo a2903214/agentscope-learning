@@ -1,3 +1,4 @@
+"""工具注册：构建 core / web / MCP 工具组并注册到 Toolkit。"""
 from typing import Awaitable, Callable
 
 from agentscope.message import ToolUseBlock
@@ -24,10 +25,11 @@ PostprocessType = Callable[[ToolUseBlock, ToolResponse], ToolResponse | None] | 
 
 
 async def build_toolkit(postprocess_func: PostprocessType | None = None) -> Toolkit:
+    """构建股票案例工具集：核心分析、联网与证据、MCP 模拟。"""
     toolkit = Toolkit()
-    toolkit.create_tool_group("core_tools", description="stock core analysis tools", active=True)
-    toolkit.create_tool_group("web_tools", description="web search and evidence tools", active=True)
-    toolkit.create_tool_group("mcp_tools", description="mcp service tools", active=True)
+    toolkit.create_tool_group("core_tools", description="股票核心分析工具", active=True)
+    toolkit.create_tool_group("web_tools", description="联网搜索与证据工具", active=True)
+    toolkit.create_tool_group("mcp_tools", description="MCP 服务工具", active=True)
 
     core = [
         discover_hot_topics,

@@ -1,3 +1,4 @@
+"""工具公共方法：统一响应格式、抓取与新闻 RSS。"""
 import json
 import urllib.parse
 import urllib.request
@@ -8,6 +9,7 @@ from agentscope.tool import ToolResponse
 
 
 def text_response(payload: Any) -> ToolResponse:
+    """将 payload 转为工具文本响应。"""
     if isinstance(payload, str):
         text = payload
     else:
@@ -16,12 +18,14 @@ def text_response(payload: Any) -> ToolResponse:
 
 
 def fetch_text(url: str, timeout: int = 10) -> str:
+    """根据 URL 抓取文本内容。"""
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
     with urllib.request.urlopen(req, timeout=timeout) as resp:
         return resp.read().decode("utf-8", errors="ignore")
 
 
 def google_news_rss(query: str, days: int = 7) -> list[dict[str, str]]:
+    """按关键词与天数从 Google 新闻 RSS 获取条目列表。"""
     rss_url = (
         "https://news.google.com/rss/search?q="
         + urllib.parse.quote(query)
@@ -39,5 +43,5 @@ def google_news_rss(query: str, days: int = 7) -> list[dict[str, str]]:
             if title and link:
                 items.append({"title": title, "url": link})
     except Exception as exc:
-        items = [{"title": f"search fallback: {query}", "url": f"error://{exc}"}]
+        items = [{"title": f"搜索回退: {query}", "url": f"error://{exc}"}]
     return items

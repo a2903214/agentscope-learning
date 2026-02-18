@@ -1,0 +1,74 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "00-environment (环境校验)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/00-environment/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "10-hello-agentscope",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/10-hello-agentscope/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "20-models",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/20-models/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "30-tools (全部工具用例)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/30-tools/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "40-memory (全部记忆用例)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/40-memory/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "50-pipeline (全部编排用例)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/50-pipeline/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "60-runtime (全部运行时用例)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/60-runtime/main.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    },
+    {
+      "name": "70-examples (股票热点分析，默认参数)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/agentscope-learning/src/70-examples/main.py",
+      "args": [
+        "--topic", "AI算力",
+        "--horizon", "中期",
+        "--risk", "中等"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/agentscope-learning/src"
+    }
+  ]
+}

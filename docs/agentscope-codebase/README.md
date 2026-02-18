@@ -13,7 +13,7 @@
 - `00-overall-design/`
   - `overall_design.zh-CN.md`：跨项目总体架构、边界、关键集成点
   - `core_module_design.zh-CN.md`：跨项目核心模块与关键流程（含时序图）
-- `10-agentscope/`：AgentScope 框架侧设计文档
+- `10-agentscope/`：AgentScope 框架侧设计文档（含 `quick_start.zh-CN.md` 快速使用指南）
 - `20-agentscope-runtime/`：Runtime（Agent-as-a-Service、Sandbox、Deploy、Tracing）设计文档
 - `30-agentscope-studio/`：Studio（Server/Client、OTel、Socket、DB）设计文档
 - `40-agentscope-spark-design/`：Spark Design（组件库、构建发布、文档站）设计文档
@@ -39,6 +39,7 @@
 - **AgentScope**
   - `10-agentscope/overall_design.zh-CN.md`
   - `10-agentscope/core_module_design.zh-CN.md`
+  - `10-agentscope/quick_start.zh-CN.md`
 - **AgentScope Runtime**
   - `20-agentscope-runtime/overall_design.zh-CN.md`
   - `20-agentscope-runtime/core_module_design.zh-CN.md`

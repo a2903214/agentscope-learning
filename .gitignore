@@ -3,6 +3,9 @@
 .env.local
 *.env
 
+# 测试/用例输出目录，不提交
+**/output/
+
 # Python
 __pycache__/
 *.py[cod]

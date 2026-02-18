@@ -25,13 +25,15 @@
 
 #### 流式打印聚合时序图
 
+参与者采用 **模块::参与者** 形式。
+
 ```mermaid
 sequenceDiagram
   autonumber
-  participant App as 应用/Runtime
-  participant P as stream_printing_messages
-  participant Q as asyncio.Queue
-  participant A as AgentBase
+  participant App as 应用/agentscope-runtime::Runner
+  participant P as agentscope::pipeline::stream_printing_messages
+  participant Q as 标准库::asyncio.Queue
+  participant A as agentscope::agent::AgentBase
 
   App->>P: 调用 stream_printing_messages(agents, coroutine_task)
   P->>A: set_msg_queue_enabled(True, Q)

@@ -26,7 +26,65 @@ Spark Design 是 AgentScope 生态的 UI 组件库仓库（monorepo），主要�
   - `docs/`：文档源
 - `package.json` + `pnpm-lock.yaml`：根配置与依赖管理
 
-## 3. 构建与开发约定
+## 3. 代码结构分析
+
+代码根路径：`agentscope-codebase/agentscope-spark-design/packages/`。
+
+| 包/目录 | 职责 | 代表路径 |
+|---------|------|----------|
+| `spark-design/` | 设计系统与通用组件（@agentscope-ai/design） | `src/antd/`、`src/components/`、`src/hooks/`、`src/libs/`、`src/i18n/` |
+| `spark-design/src/antd` | 主题与 token 扩展 | 主题配置 |
+| `spark-design/src/components` | 通用/移动端组件 | `commonComponents/`、`mobileComponents/` |
+| `spark-chat/` | 对话 UI（@agentscope-ai/chat） | Bubble、Sender、Markdown、Mermaid、Conversations、ChatAnywhere 等 |
+
+## 4. 技术架构框图
+
+```mermaid
+flowchart TB
+  subgraph spark_design["packages/spark-design"]
+    Antd[antd 主题]
+    Components[components]
+    Hooks[hooks]
+    Libs[libs]
+    I18n[i18n]
+  end
+
+  subgraph spark_chat["packages/spark-chat"]
+    Bubble[Bubble]
+    Sender[Sender]
+    Markdown[Markdown]
+    Mermaid[Mermaid]
+    Conversations[Conversations]
+  end
+
+  subgraph 上层应用
+    Studio[Studio]
+    Samples[Samples/业务]
+  end
+  Studio --> spark_design
+  Studio --> spark_chat
+  Samples --> spark_design
+  Samples --> spark_chat
+```
+
+## 5. 模块调用关系图
+
+```mermaid
+flowchart LR
+  subgraph design["spark-design"]
+    D1[antd]
+    D2[components]
+    D3[hooks/libs]
+    D2 --> D1
+    D2 --> D3
+  end
+  subgraph chat["spark-chat"]
+    C1[Bubble/Sender/Markdown/Mermaid]
+  end
+  chat --> design
+```
+
+## 6. 构建与开发约定
 
 根 `package.json`（见仓库文件）提供主要脚本：
 
@@ -35,17 +93,19 @@ Spark Design 是 AgentScope 生态的 UI 组件库仓库（monorepo），主要�
 - `pnpm run start:spark-chat`：启动 spark-chat dev server
 - `pnpm run build:*`：构建各子包与文档
 
-## 4. 主要流程时序图（“开发-构建-文档发布”）
+## 7. 主要流程时序图（“开发-构建-文档发布”）
+
+参与者采用 **模块::参与者** 形式标注来源。
 
 ```mermaid
 sequenceDiagram
   autonumber
-  participant Dev as 开发者
-  participant PN as pnpm
-  participant SD as packages/spark-design
-  participant SC as packages/spark-chat
-  participant DOC as Dumi Docs
-  participant REG as npm registry / pages
+  participant Dev as 外部::开发者
+  participant PN as 根::pnpm
+  participant SD as agentscope-spark-design::spark-design
+  participant SC as agentscope-spark-design::spark-chat
+  participant DOC as 根::Dumi Docs
+  participant REG as 外部::npm registry / pages
 
   Dev->>PN: pnpm install
   PN-->>SD: 安装依赖

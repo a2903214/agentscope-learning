@@ -57,16 +57,86 @@ AgentScope Runtime 提供“生产级运行时”能力，将智能体应用以 
 - 本地模式下根据 deployment_type 创建 container client（Docker/K8s）
 - 通过装饰器（`remote_wrapper(_async)`）让同一方法在“本地/远端”双栈工作
 
-## 3. 主要流程时序图（Agent API /process）
+## 3. 代码结构分析
+
+包根路径：`agentscope-codebase/agentscope-runtime/src/agentscope_runtime/`。
+
+| 目录/模块 | 职责 | 代表文件/子模块 |
+|-----------|------|-----------------|
+| `engine/` | 服务入口、执行内核、部署、追踪 | `app/agent_app.py`、`runner.py`、`deployers/`、`tracing/` |
+| `engine/app/` | FastAPI 应用、路由、协议、中断 | `agent_app.py` |
+| `engine/runner.py` | 统一 stream_query、事件流、框架适配调度 | `runner.py` |
+| `engine/deployers/` | 部署抽象与具体实现（本地/FC/K8s/ModelStudio 等） | `base.py`、`local_deploy`、`modelstudio_deployer` 等 |
+| `engine/tracing/` | Log/OTel 上报与语义约定 | `README.md`、tracing 实现 |
+| `sandbox/` | 安全执行与容器/远端管理 | `manager/sandbox_manager.py`、`box/`（base/gui/browser/filesystem/mobile） |
+| `adapters/` | 各框架的流式适配（agentscope、langgraph 等） | `agentscope/` 等 |
+| `tools/` | 开箱即用工具（generations、searches、realtime_clients、modelstudio_* 等） | `generations/`、`searches/`、`realtime_clients/`、`mcp_wrapper.py` 等 |
+
+## 4. 技术架构框图
+
+```mermaid
+flowchart TB
+  subgraph 外部
+    Client[Client/UI]
+  end
+
+  subgraph engine["engine"]
+    AgentApp[app::AgentApp]
+    Runner[Runner]
+    Deployers[deployers::DeployManager]
+    Tracing[tracing]
+    Adapters[adapters::agentscope 等]
+  end
+
+  subgraph sandbox["sandbox"]
+    SM[manager::SandboxManager]
+    Box[box::Base/Gui/Browser/Filesystem/Mobile]
+    SM --> Box
+  end
+
+  Client --> AgentApp
+  AgentApp --> Runner
+  Runner --> Adapters
+  Runner --> Deployers
+  Runner --> Tracing
+  Adapters -.->|工具隔离| SM
+```
+
+## 5. 模块调用关系图
+
+```mermaid
+flowchart LR
+  subgraph app["engine.app"]
+    A1[AgentApp]
+  end
+  subgraph engine["engine"]
+    R1[Runner]
+    Adapter[adapters]
+    Deploy[deployers]
+    Trace[tracing]
+  end
+  subgraph sandbox["sandbox"]
+    SM[SandboxManager]
+  end
+  A1 --> R1
+  R1 --> Adapter
+  R1 --> Deploy
+  R1 --> Trace
+  Adapter -.-> SM
+```
+
+## 6. 主要流程时序图（Agent API /process）
+
+参与者采用 **模块::参与者** 形式标注来源。
 
 ```mermaid
 sequenceDiagram
   autonumber
-  participant C as Client
-  participant App as AgentApp
-  participant R as Runner
-  participant Adapter as Framework Adapter
-  participant A as Agent (AgentScope)
+  participant C as 外部::Client
+  participant App as engine::app::AgentApp
+  participant R as engine::Runner
+  participant Adapter as engine::adapters::FrameworkAdapter
+  participant A as agentscope::agent::ReActAgent
 
   C->>App: POST /process (AgentRequest)
   App->>R: stream_query(request)
@@ -80,7 +150,7 @@ sequenceDiagram
   App-->>C: SSE streaming response
 ```
 
-## 4. 可观测性与中断
+## 7. 可观测性与中断
 
 - **Tracing**：Runner 的 `stream_query()` 使用装饰器 `@trace(TraceType.AGENT_STEP, ...)`（见 `runner.py`）对执行步骤进行追踪。
 - **Interrupt**：AgentApp 在初始化中根据配置选择 Redis 或 Local backend（见 `AgentApp._setup_interrupt_service()`），实现可控打断。

@@ -57,12 +57,14 @@
 
 #### Sandbox 调用抽象时序图（远端模式）
 
+参与者采用 **模块::参与者** 形式。
+
 ```mermaid
 sequenceDiagram
   autonumber
-  participant Caller as Runtime/Tool Adapter
-  participant SM as SandboxManager
-  participant HTTP as Remote Sandbox Service
+  participant Caller as agentscope::tool::Toolkit / agentscope-runtime::adapters
+  participant SM as agentscope-runtime::sandbox::SandboxManager
+  participant HTTP as 外部::Remote Sandbox Service
 
   Caller->>SM: 调用某方法（如 run_shell_command）
   SM->>SM: remote_wrapper 检测 http_session 存在

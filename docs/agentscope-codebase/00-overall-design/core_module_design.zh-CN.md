@@ -22,15 +22,17 @@
 
 #### ReAct 主流程时序图（抽象）
 
+参与者采用 **模块::参与者** 形式。
+
 ```mermaid
 sequenceDiagram
   autonumber
-  participant U as UserAgent
-  participant A as ReActAgent
-  participant Mem as Memory
-  participant F as Formatter
-  participant Model as ChatModel
-  participant TK as Toolkit
+  participant U as 应用::UserAgent
+  participant A as agentscope::agent::ReActAgent
+  participant Mem as agentscope::memory::Memory
+  participant F as agentscope::formatter::Formatter
+  participant Model as agentscope::model::ChatModel
+  participant TK as agentscope::tool::Toolkit
 
   U->>A: Msg(user)
   A->>Mem: 写入输入消息
@@ -84,14 +86,16 @@ sequenceDiagram
 
 #### Runtime SSE 主流程时序图
 
+参与者采用 **模块::参与者** 形式。
+
 ```mermaid
 sequenceDiagram
   autonumber
-  participant C as Client
-  participant App as AgentApp (FastAPI)
-  participant R as Runner
-  participant Adapter as Stream Adapter
-  participant A as AgentScope Agent
+  participant C as 外部::Client
+  participant App as agentscope-runtime::engine::app::AgentApp
+  participant R as agentscope-runtime::engine::Runner
+  participant Adapter as agentscope-runtime::engine::adapters::StreamAdapter
+  participant A as agentscope::agent::ReActAgent
 
   C->>App: POST /process (AgentRequest)
   App->>R: stream_query(request)
@@ -126,14 +130,16 @@ Studio server（`agentscope-codebase/agentscope-studio/packages/server/src/index
 
 #### Studio：OTEL → 入库 → 推送（抽象时序图）
 
+参与者采用 **模块::参与者** 形式。
+
 ```mermaid
 sequenceDiagram
   autonumber
-  participant SRC as Agent/Runtime
-  participant ST as Studio Server
-  participant DB as TypeORM DB
-  participant IO as Socket.IO
-  participant UI as Studio Client
+  participant SRC as agentscope-runtime/agentscope::Agent/Runtime
+  participant ST as agentscope-studio::server
+  participant DB as agentscope-studio::server::database
+  participant IO as agentscope-studio::server::trpc::Socket.IO
+  participant UI as agentscope-studio::client
 
   SRC-->>ST: /v1/traces (HTTP) 或 gRPC
   ST->>DB: 写入 Span/Run/Message 相关表
@@ -143,24 +149,25 @@ sequenceDiagram
 
 ## 7. 架构图主链路时序图（全局视角）
 
-以下时序图将架构图中的主块串起来：**Model Providers → AgentScope Core（Model/Tool/Agent/Memory/Orchestration）→ Runtime（AaaS/Sandbox/Deployment）→ Studio（Tracing/Project/Chat UI）→ 观测平台（OTel 生态）**。
+以下时序图将架构图中的主块串起来：**Model Providers → AgentScope Core（Model/Tool/Agent/Memory/Orchestration）→ Runtime（AaaS/Sandbox/Deployment）→ Studio（Tracing/Project/Chat UI）→ 观测平台（OTel 生态）**。  
+参与者采用 **模块::参与者** 形式。
 
 ```mermaid
 sequenceDiagram
   autonumber
-  participant User as 用户/业务系统
-  participant StudioUI as Studio Chat UI / Project Management
-  participant RuntimeAPI as Agent-as-a-Service API
-  participant Agent as ReAct Agent (Hooking/A2A Agent)
-  participant Orchestration as MsgHub/Planning/Pipeline
-  participant CtxMem as Memory Storage / RAG & Knowledge / Advanced Memory
-  participant Tool as Meta-Tool / Function Call / Agent Skills / MCP / HITL
-  participant Sandbox as Tool Sandbox
-  participant Model as Chat/Multi-modal/Realtime Models
-  participant Provider as OpenAI/Qwen/Gemini/Claude/.../Model Studio/Ollama/vLLM
-  participant Eval as Evaluation Pipeline / Graders / OpenJudge
-  participant Tune as Tuner (Workflow Function/Task Dataset, Trinity-RFT)
-  participant Obs as OpenTelemetry + ARMS/LangSmith/Langfuse/Phoenix/SLS/LoongSuite
+  participant User as 外部::用户/业务系统
+  participant StudioUI as agentscope-studio::client
+  participant RuntimeAPI as agentscope-runtime::engine::AgentApp
+  participant Agent as agentscope::agent::ReActAgent
+  participant Orchestration as agentscope::pipeline/MsgHub/Planning
+  participant CtxMem as agentscope::memory/rag
+  participant Tool as agentscope::tool::Toolkit
+  participant Sandbox as agentscope-runtime::sandbox::SandboxManager
+  participant Model as agentscope::model
+  participant Provider as 外部::OpenAI/Qwen/Gemini/...
+  participant Eval as agentscope::evaluate
+  participant Tune as agentscope::tune/tuner
+  participant Obs as 外部::OpenTelemetry/ARMS/LangSmith/...
 
   User->>StudioUI: 创建项目/发起会话
   StudioUI->>RuntimeAPI: 提交 AgentRequest（SSE/协议）

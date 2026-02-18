@@ -42,17 +42,73 @@ Samples 仓库提供“可直接运行”的示例集合，覆盖从命令行小
 - 工具执行可接入 Runtime Sandbox（隔离执行）
 - 可选接入 Studio 进行 tracing 与运行可视化
 
-## 4. 主要流程时序图（fullstack runtime 抽象）
+## 4. 代码结构分析
+
+代码根路径：`agentscope-codebase/agentscope-samples/`。
+
+| 目录 | 职责 | 说明 |
+|------|------|------|
+| `alias/` | 通用 AI Agent | 含 fullstack runtime、memory_service 等 |
+| `browser_use/` | 浏览器自动化 | 纯 Python / 进阶 / fullstack runtime |
+| `deep_research/` | 深度研究 | 多智能体、fullstack runtime |
+| `conversational_agents/` | 对话应用 | chatbot、多智能体对话/辩论、fullstack runtime |
+| `evaluation/` | 评测 | ACE Bench 等 |
+| `tuner/` | 调优 | 各类 tuning 示例 |
+| `evotraders/` | 多智能体交易 | 示例应用 |
+
+各示例内部常见结构：`main.py` / `agent.py`、`built_in_prompt/`、前端目录（若 fullstack）、README。
+
+## 5. 技术架构框图（Fullstack Runtime 示例）
+
+```mermaid
+flowchart TB
+  subgraph samples["agentscope-samples 某示例"]
+    FE[Frontend]
+    BE[Backend]
+    BE --> FE
+  end
+  subgraph runtime["agentscope-runtime"]
+    AgentApp[engine::AgentApp]
+    Runner[engine::Runner]
+    Sandbox[sandbox::SandboxManager]
+    AgentApp --> Runner
+    Runner --> Sandbox
+  end
+  subgraph framework["agentscope"]
+    Agent[agent::ReActAgent]
+    Toolkit[tool::Toolkit]
+    Agent --> Toolkit
+  end
+  BE --> AgentApp
+  Runner --> Agent
+  Toolkit -.-> Sandbox
+```
+
+## 6. 模块调用关系图（Fullstack 示例内）
+
+```mermaid
+flowchart LR
+  FE[Frontend] --> BE[Backend]
+  BE --> AgentApp[AgentApp]
+  AgentApp --> Runner[Runner]
+  Runner --> ReAct[ReActAgent]
+  ReAct --> Toolkit[Toolkit]
+  Toolkit -.-> Sandbox[Sandbox]
+```
+
+## 7. 主要流程时序图（fullstack runtime 抽象）
+
+参与者采用 **模块::参与者** 形式标注来源。
 
 ```mermaid
 sequenceDiagram
   autonumber
-  participant UI as Frontend
-  participant BE as Backend (AgentApp/Service)
-  participant RT as Runtime Runner
-  participant AG as AgentScope Agent
-  participant TK as Toolkit/Tools
-  participant SB as Sandbox (optional)
+  participant UI as agentscope-samples::Frontend
+  participant BE as agentscope-samples::Backend
+  participant RT as agentscope-runtime::engine::Runner
+  participant AG as agentscope::agent::ReActAgent
+  participant TK as agentscope::tool::Toolkit
+  participant SB as agentscope-runtime::sandbox::SandboxManager
 
   UI->>BE: 用户输入/请求
   BE->>RT: stream_query(AgentRequest)
